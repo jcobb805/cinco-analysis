@@ -387,7 +387,7 @@ if(wi==null||wi<0||wi>=W.length)return;
 const w=W[wi];
 const rows=[
 ['Unit',w.unit||'--'],['Reservoir',w.reservoir||'--'],
-['North',w.strN||'--'],w.strM?['Middle',w.strM]:null,['South',w.strS||'--'],
+['North STR',w.strN||'--'],w.strM?['Middle STR',w.strM]:null,['South STR',w.strS||'--'],
 ['NMA',addC(w.nma.toFixed(1))],['W.I.',(w.wi_pct*100).toFixed(2)+'%'],['NRI',(w.nri_pct*100).toFixed(2)+'%'],
 ['8/8ths NRI',(w.nri8*100).toFixed(2)+'%'],['Lateral',addC(w.latFt.toFixed(0))+' ft'],
 ['IRR',d.irr[wi]!=null?(d.irr[wi]*100).toFixed(1)+'%':'N/A'],
