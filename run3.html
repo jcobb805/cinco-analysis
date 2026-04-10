@@ -80,8 +80,9 @@ Chart.register(ChartDataLabels);
 Chart.defaults.color='#8899aa';Chart.defaults.borderColor='#2a3a4d';Chart.defaults.font.family='Arial';
 Chart.defaults.plugins.datalabels={display:false};
 
+const HC=5; // historical cutoff: months 0-4 (Nov 2025 - Mar 2026) locked to actuals, Apr 2026+ adjustable
 function adjBTCF(wi,oP,gP,nP){const w=W[wi],oM=oP/BO,gM=gP/BG,nM=nP/BN;const cf=[];
-for(let j=0;j<N;j++){const bR=w.oilRev[j]+w.gasRev[j]+w.nglRev[j];const nR=w.oilRev[j]*oM+w.gasRev[j]*gM+w.nglRev[j]*nM;
+for(let j=0;j<N;j++){if(j<HC){cf.push(w.btcf[j]);continue;}const bR=w.oilRev[j]+w.gasRev[j]+w.nglRev[j];const nR=w.oilRev[j]*oM+w.gasRev[j]*gM+w.nglRev[j]*nM;
 const rr=bR>0?nR/bR:1;cf.push(w.btcf[j]+(nR-bR)-w.sevTax[j]*(rr-1));}return cf;}
 
 function recomp(oP,gP,nP){
@@ -96,6 +97,7 @@ const tCum=[];{let s=0;for(let j=0;j<N;j++){s+=tCF[j];tCum.push(s);}}
 // Adjusted NOI: base NOI + revenue delta - sev tax delta
 const oM=oP/BO,gM=gP/BG,nM=nP/BN;
 const noi=W.map((w,i)=>{const a=[];for(let j=0;j<N;j++){
+if(j<HC){a.push(w.noi[j]||0);continue;}
 const bR=w.oilRev[j]+w.gasRev[j]+w.nglRev[j];
 const nR=w.oilRev[j]*oM+w.gasRev[j]*gM+w.nglRev[j]*nM;
 const rr=bR>0?nR/bR:1;
