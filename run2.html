@@ -191,7 +191,7 @@ scales:{y:{title:{display:true,text:'MOIC (x)'},suggestedMin:0,suggestedMax:2}},
 annotation:{annotations:{line1:{type:'line',yMin:1,yMax:1,borderColor:'#fff',borderWidth:1,borderDash:[4,4]}}}}});
 
 const c11=new Chart(document.getElementById('c11'),{type:'bar',data:{labels:DT.slice(0,MC),datasets:[{label:'NOI',data:[],backgroundColor:'#4ECDC4',borderRadius:2}]},
-options:{responsive:true,plugins:{title:{display:true,text:'Monthly Net Operating Income ($K)',color:'#d4a84b',font:{size:13}},legend:{display:false},datalabels:{display:false}},
+options:{responsive:true,plugins:{title:{display:true,text:'Monthly Net Operating Income - Based on Production Month ($K)',color:'#d4a84b',font:{size:13}},legend:{display:false},datalabels:{display:false}},
 scales:{y:{title:{display:true,text:'$K'}}}}});
 
 const c12=new Chart(document.getElementById('c12'),{type:'bar',data:{labels:DT.slice(0,MC),datasets:[{label:'CAPEX',data:[],backgroundColor:'#FF6B6B',borderRadius:2}]},
@@ -223,7 +223,8 @@ document.getElementById('kpis').innerHTML=
   kpi('Wells',wList.length)+kpi('Avg Payout',avgP+' mo')+kpi('Wtd. Avg. IRR',wIRR)+kpi('Total Cum CF',fmtKPI(lastC));
 
 // Payout
-const pS=wList.map(i=>({n:W[i].name,p:d.pm[i],idx:i})).filter(x=>x.p!=null).sort((a,b)=>b.p-a.p);
+const pExcl=['Puffin','Quetzal','Topaz'];
+const pS=wList.map(i=>({n:W[i].name,p:d.pm[i],idx:i})).filter(x=>x.p!=null&&!pExcl.includes(x.n)).sort((a,b)=>b.p-a.p);
 charts.c1.data.labels=pS.map(x=>x.n);charts.c1.data.datasets[0].data=pS.map(x=>x.p);
 charts.c1._payIdx=pS.map(x=>x.idx);charts.c1.update();
 
@@ -254,7 +255,7 @@ charts.c4.options.plugins.title.text=(isAll?'Total ':'')+'Monthly Cash Flow thro
 charts.c4.update();
 
 // NRI
-const nS=wList.map(i=>({n:W[i].name,nri:W[i].nri8,p:d.pm[i],idx:i})).filter(x=>x.p!=null).sort((a,b)=>b.p-a.p);
+const nS=wList.map(i=>({n:W[i].name,nri:W[i].nri8,p:d.pm[i],idx:i})).filter(x=>x.p!=null&&!pExcl.includes(x.n)).sort((a,b)=>b.p-a.p);
 charts.c5.data.labels=nS.map(x=>x.n);charts.c5.data.datasets[0].data=nS.map(x=>x.nri);charts.c5.data.datasets[1].data=nS.map(x=>x.p);
 charts.c5._nriIdx=nS.map(x=>x.idx);
 charts.c5.data.datasets[0].datalabels=isAll?{display:false}:{display:true,color:'#e0e0e0',font:{size:11,weight:'bold'},anchor:'end',align:'top',formatter:v=>(v*100).toFixed(1)+'%'};
@@ -262,7 +263,7 @@ charts.c5.data.datasets[1].datalabels=isAll?{display:false}:{display:true,color:
 charts.c5.update();
 
 // AFE
-const aS=wList.map(i=>({n:W[i].name,afe:W[i].afeNma,p:d.pm[i],idx:i})).filter(x=>x.p!=null).sort((a,b)=>b.p-a.p);
+const aS=wList.map(i=>({n:W[i].name,afe:W[i].afeNma,p:d.pm[i],idx:i})).filter(x=>x.p!=null&&!pExcl.includes(x.n)).sort((a,b)=>b.p-a.p);
 charts.c6.data.labels=aS.map(x=>x.n);charts.c6.data.datasets[0].data=aS.map(x=>x.afe);charts.c6.data.datasets[1].data=aS.map(x=>x.p);
 charts.c6._afeIdx=aS.map(x=>x.idx);
 charts.c6.data.datasets[0].datalabels=isAll?{display:false}:{display:true,color:'#e0e0e0',font:{size:11,weight:'bold'},anchor:'end',align:'top',formatter:v=>'$'+addC(Math.round(v).toString())};
@@ -299,7 +300,7 @@ charts.c10.update();
 const noiD=new Array(MC).fill(0),capD=new Array(MC).fill(0);
 for(const i of wList){for(let j=0;j<MC;j++){noiD[j]+=d.noi[i][j]||0;capD[j]+=W[i].capex[j];}}
 charts.c11.data.datasets[0].data=noiD;
-charts.c11.options.plugins.title.text='Monthly Net Operating Income ($K)'+(isAll?'':' - '+W[f].name);charts.c11.update();
+charts.c11.options.plugins.title.text='Monthly Net Operating Income - Based on Production Month ($K)'+(isAll?'':' - '+W[f].name);charts.c11.update();
 charts.c12.data.datasets[0].data=capD;
 charts.c12.options.plugins.title.text='Monthly CAPEX ($K)'+(isAll?'':' - '+W[f].name);charts.c12.update();
 }
