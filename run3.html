@@ -201,7 +201,8 @@ options:{responsive:true,plugins:{title:{display:true,text:'Monthly Net Operatin
 scales:{y:{title:{display:true,text:'$K'}}}}});
 
 const c12=new Chart(document.getElementById('c12'),{type:'bar',data:{labels:DT.slice(0,MC),datasets:[{label:'CAPEX',data:[],backgroundColor:'#FF6B6B',borderRadius:2}]},
-options:{responsive:true,plugins:{title:{display:true,text:'Monthly CAPEX ($K)',color:'#d4a84b',font:{size:13}},legend:{display:false},datalabels:{display:false}},
+options:{responsive:true,onClick:(_,el)=>{if(el[0])showCapex(el[0].index);},
+plugins:{title:{display:true,text:'Monthly CAPEX ($K)',color:'#d4a84b',font:{size:13}},legend:{display:false},datalabels:{display:false}},
 scales:{y:{title:{display:true,text:'$K'}}}}});
 
 // Gross EUR by Well (stacked: Oil, Gas as BOE, NGL)
@@ -412,6 +413,20 @@ document.getElementById('pt').innerHTML=rows.filter(r=>r).map(r=>'<tr><td>'+r[0]
 document.getElementById('po').style.display='block';document.getElementById('pp').style.display='block';
 }
 function closePanel(){document.getElementById('po').style.display='none';document.getElementById('pp').style.display='none';}
+
+function showCapex(monthIdx){
+const wellCap=[];
+for(let i=0;i<W.length;i++){const c=W[i].capex[monthIdx]||0;if(c!==0)wellCap.push({n:W[i].name,c:c});}
+if(!wellCap.length)return;
+wellCap.sort((a,b)=>Math.abs(b.c)-Math.abs(a.c));
+const total=wellCap.reduce((s,x)=>s+x.c,0);
+const rows=wellCap.map(x=>['<span style="cursor:pointer;color:#d4a84b" onclick="goWell(\''+x.n.replace(/'/g,"\\'")+'\')">'+x.n+'</span>','$'+addC(Math.round(x.c).toString())+'K']);
+rows.push(['<b>Total</b>','<b>$'+addC(Math.round(total).toString())+'K</b>']);
+document.getElementById('pn').textContent='CAPEX - '+DT[monthIdx];
+document.getElementById('pt').innerHTML=rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('');
+document.getElementById('po').style.display='block';document.getElementById('pp').style.display='block';
+}
+function goWell(name){const idx=W.findIndex(w=>w.name===name);if(idx<0)return;document.getElementById('wf').value=idx;closePanel();update();}
 
 function kpi(l,v){return'<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div></div>';}
 function resetAll(){document.getElementById('oS').value=BO;document.getElementById('gS').value=BG;document.getElementById('nS').value=BN;document.getElementById('wf').value=-1;update();}
