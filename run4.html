@@ -431,5 +431,9 @@ function goWell(name){const idx=W.findIndex(w=>w.name===name);if(idx<0)return;do
 function kpi(l,v){return'<div class="kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div></div>';}
 function resetAll(){document.getElementById('oS').value=BO;document.getElementById('gS').value=BG;document.getElementById('nS').value=BN;document.getElementById('wf').value=-1;update();}
 ['oS','gS','nS','wf'].forEach(id=>document.getElementById(id).addEventListener('input',update));
-init();update();
+init();
+// URL param: ?well=BEATY 1-2-11-14CHX or display name
+const urlWell=new URLSearchParams(location.search).get('well');
+if(urlWell){const idx=W.findIndex(w=>w.name===urlWell||w.name.toLowerCase()===urlWell.toLowerCase());if(idx>=0)document.getElementById('wf').value=idx;}
+update();
 </script></body></html>
