@@ -118,7 +118,10 @@ let r=0.01;for(let it=0;it<1000;it++){let npv=0,dn=0;
 for(let t=0;t<c.length;t++){const d=Math.pow(1+r,t);npv+=c[t]/d;dn-=t*c[t]/(d*(1+r));}
 if(Math.abs(dn)<1e-20)break;const rN=r-npv/dn;if(Math.abs(rN-r)<1e-10){r=rN;return r>-1?Math.pow(1+r,12)-1:null;}
 r=rN;if(r<=-1)r=-0.99;}return null;});
-return{cf,mo,cum,pm,cpn,cnAt,tCF,tCum,oilBD,gasMD,nglBD,boeBD,irr,noi};}
+// Dynamic PV10: discount monthly BTCF at 10% annual (compounded monthly)
+const _r10=Math.pow(1.10,1/12)-1;
+const pv10=cf.map(row=>{let pv=0;for(let j=0;j<row.length;j++)pv+=row[j]/Math.pow(1+_r10,j);return pv;});
+return{cf,mo,cum,pm,cpn,cnAt,tCF,tCum,oilBD,gasMD,nglBD,boeBD,irr,noi,pv10};}
 
 let charts={};
 function sel(){return+document.getElementById('wf').value;}
@@ -387,7 +390,7 @@ else wi=chartIdx;
 if(wi==null||wi<0||wi>=W.length)return;
 const w=W[wi];
 const rows=[
-['Unit',w.unit||'--'],['Reservoir',w.reservoir||'--'],
+['Unit',w.unit||'--'],['Formation',w.reservoir||'--'],
 ['North STR',w.strN||'--'],w.strM?['Middle STR',w.strM]:null,['South STR',w.strS||'--'],
 ['NMA',addC(w.nma.toFixed(1))],['W.I.',(w.wi_pct*100).toFixed(2)+'%'],['NRI',(w.nri_pct*100).toFixed(2)+'%'],
 ['8/8ths NRI',(w.nri8*100).toFixed(2)+'%'],['Lateral',addC(w.latFt.toFixed(0))+' ft'],
@@ -398,6 +401,8 @@ const rows=[
 ['$/NMA Mo 24',d.cnAt(wi,24)!=null?fmtNMA(d.cnAt(wi,24)):'--'],
 ['$/NMA Mo 36',d.cnAt(wi,36)!=null?fmtNMA(d.cnAt(wi,36)):'--'],
 ['Cum CF',fmtMdol(d.cum[wi][N-1])],
+['PV10',fmtMdol(d.pv10[wi])],
+['PV10/NMA',w.nma>0?fmtNMA(d.pv10[wi]/w.nma*1000):'--'],
 ['Gross EUR Oil',addC(w.eurOil.toFixed(0))+' MBbl'],
 ['Gross EUR Gas',addC(w.eurGas.toFixed(0))+' MMcf'],
 ['Gross EUR NGL',addC(w.eurNGL.toFixed(0))+' MBbl'],
