@@ -101,7 +101,8 @@ function recomp(oP,gP,nP){
 const cf=W.map((_,i)=>adjBTCF(i,oP,gP,nP));
 const mo=cf.map(c=>{const m=new Array(N).fill(0);let f=-1;for(let j=0;j<N;j++){if(c[j]>0&&f<0)f=j;}if(f>=0)for(let j=f;j<N;j++)m[j]=j-f+1;return m;});
 const cum=cf.map(c=>{const a=[];let s=0;for(let j=0;j<N;j++){s+=c[j];a.push(s);}return a;});
-const pm=cf.map((_,i)=>{for(let j=0;j<N;j++){if(mo[i][j]>0&&cum[i][j]>0)return mo[i][j];}return null;});
+// Payout: months from spud (first capex month)
+const pm=cf.map((_,i)=>{let s=-1;for(let j=0;j<N;j++){if(W[i].capex[j]>0){s=j;break;}}if(s<0)return null;for(let j=s;j<N;j++){if(cum[i][j]>0)return j-s+1;}return null;});
 const cpn=cum.map((r,i)=>r.map(v=>W[i].nma?v/W[i].nma*1000:0));
 function cnAt(i,t){for(let j=0;j<N;j++){if(mo[i][j]===t)return cpn[i][j];}return null;}
 const tCF=new Array(N).fill(0);for(let j=0;j<N;j++)for(let i=0;i<W.length;i++)tCF[j]+=cf[i][j];
